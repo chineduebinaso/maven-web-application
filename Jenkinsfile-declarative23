@@ -1,0 +1,123 @@
+Skip to content
+LandmakTechnology
+/
+maven-web-application
+
+Type / to search
+Command palette
+Create new...
+Issues
+Pull requests
+You have no unread notifications
+Code
+Pull requests
+135
+Actions
+Projects
+Security
+Insights
+Commit
+Browse the repository at this point in the history
+Create Jenkinsfile-declarative23
+ master
+@legah2045
+legah2045 committed now 
+1 parent 907a1de
+commit eadb5a8
+Showing 1 changed file with 65 additions and 0 deletions.
+ 65 changes: 65 additions & 0 deletions65  
+Jenkinsfile-declarative23
+@@ -0,0 +1,65 @@
+pipeline{
+  agent any  
+  tools {
+    maven "maven3.8.2"
+  }
+  //options {}  
+  //triggers {}
+  stages{
+    stage('1clone'){
+      steps{
+        sh "echo ready to automate build"
+        git 'https://github.com/LandmakTechnology/maven-web-application'
+        sh "echo latest application version collected from SCM"
+      }   
+    }
+    stage('2build'){
+      steps{
+        sh "echo build process starts "
+        sh "mvn clean package"
+        sh "echo build process ends"
+      }
+    }
+
+    stage('3review'){
+      steps{
+        sh "echo CodeQuality review  starts "
+        sh "mvn sonar:sonar"
+        sh "echo CodeQuality review ends"
+      }
+    }      
+    stage('4UploadArtifacts'){
+      steps{
+        sh "mvn deploy"
+        sh "echo build and release job completed successfully"
+      }     
+    }
+    stage('5deployment'){
+      steps{
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://54.166.85.32:8177/')], contextPath: null, war: 'target/*war'
+        sh "echo deployment to production completed successfully"
+      }       
+    }
+  }
+  post{
+    failure{
+         emailext body: '''Hi Team,
+Build failed
+Landmark Technologies''', recipientProviders: [developers(), contributor()], subject: 'build status', to: 'developers'
+
+    }
+    success{
+         emailext body: '''Hi Team,
+Build succeeded
+Landmark Technologies''', recipientProviders: [developers(), contributor()], subject: 'build status', to: 'developers'
+
+    }
+    always{
+         emailext body: '''Hi Team,
+Build status
+Landmark Technologies''', recipientProviders: [developers(), contributor()], subject: 'build status', to: 'developers'
+
+    }
+  }
+
+}
+0 comments on commit eadb5a8
+@chineduebinaso
+ 
+Add heading textAdd bold text, <Ctrl+b>Add italic text, <Ctrl+i>
+Add a quote, <Ctrl+Shift+.>Add code, <Ctrl+e>Add a link, <Ctrl+k>
+Add a bulleted list, <Ctrl+Shift+8>Add a numbered list, <Ctrl+Shift+7>Add a task list, <Ctrl+Shift+l>
+Directly mention a user or team
+Reference an issue, pull request, or discussion
+Add saved reply
+Leave a comment
+No file chosen
+Attach files by dragging & dropping, selecting or pasting them.
+Styling with Markdown is supported
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Create Jenkinsfile-declarative23 · LandmakTechnology/maven-web-application@eadb5a8
